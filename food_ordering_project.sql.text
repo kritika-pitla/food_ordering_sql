@@ -1,0 +1,75 @@
+DROP DATABASE IF EXISTS food_ordering;
+CREATE DATABASE food_ordering;
+USE food_ordering;
+USE food_ordering;
+CREATE TABLE Customers (
+    customer_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    city VARCHAR(50)
+);
+CREATE TABLE Restaurants (
+    restaurant_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    city VARCHAR(50)
+);
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    restaurant_id INT,
+    order_date DATE,
+    item VARCHAR(100),
+    quantity INT,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
+    FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id)
+);
+CREATE TABLE Payments (
+    payment_id INT PRIMARY KEY,
+    order_id INT,
+    amount DECIMAL(10,2),
+    payment_method VARCHAR(50),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+);
+INSERT INTO Customers VALUES
+(1, 'Alice', 'Delhi'),
+(2, 'Bob', 'Mumbai'),
+(3, 'Charlie', 'Bangalore');
+INSERT INTO Restaurants VALUES
+(101, 'Pizza Palace', 'Delhi'),
+(102, 'Burger Hub', 'Mumbai'),
+(103, 'Taco Treat', 'Bangalore');
+INSERT INTO Orders VALUES
+(201, 1, 101, '2023-07-01', 'Veg Pizza', 2),
+(202, 2, 102, '2023-07-02', 'Cheese Burger', 1),
+(203, 3, 103, '2023-07-03', 'Tacos', 3),
+(204, 1, 102, '2023-07-05', 'French Fries', 2);
+INSERT INTO Payments VALUES
+(301, 201, 500, 'UPI'),
+(302, 202, 150, 'Credit Card'),
+(303, 203, 450, 'Cash'),
+(304, 204, 200, 'UPI');
+SELECT item, SUM(quantity) AS total_ordered
+FROM Orders
+GROUP BY item
+ORDER BY total_ordered DESC
+LIMIT 1;
+SELECT c.name AS customer, SUM(p.amount) AS total_spent
+FROM Customers c
+JOIN Orders o ON c.customer_id = o.customer_id
+JOIN Payments p ON o.order_id = p.order_id
+GROUP BY c.name
+ORDER BY total_spent DESC
+LIMIT 1;
+SELECT payment_method, SUM(amount) AS total_revenue
+FROM Payments
+GROUP BY payment_method;
+SELECT MONTH(order_date) AS month, SUM(p.amount) AS monthly_revenue
+FROM Orders o
+JOIN Payments p ON o.order_id = p.order_id
+GROUP BY MONTH(order_date)
+ORDER BY month;
+SELECT * FROM Customers;
+SELECT * FROM Restaurants;
+SELECT * FROM Orders;
+SELECT * FROM Payments;
+DESCRIBE Orders;
+SELECT * FROM Orders;
